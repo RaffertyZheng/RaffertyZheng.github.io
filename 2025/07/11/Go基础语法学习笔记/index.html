@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+
+  
+  <title>Go基础语法学习笔记 | Rafferty&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" href="/css/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+  <link rel="preload" href="/css/fonts/Roboto-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <meta name="description" content="Tips: 新手向文章，其中涉及的代码你可以在 Https:&#x2F;&#x2F;github.com&#x2F;fishcanf1y&#x2F;Programming&#x3D;Learning&#x2F;Golang&#x2F; 中找到 Hello World：1234567package main  import &quot;fmt&quot;    func main() &#123;      fmt.Printf(&quot;Hello World\n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go基础语法学习笔记">
+<meta property="og:url" content="https://raffertyzheng.github.io/2025/07/11/Go%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Rafferty&#39;s Blog">
+<meta property="og:description" content="Tips: 新手向文章，其中涉及的代码你可以在 Https:&#x2F;&#x2F;github.com&#x2F;fishcanf1y&#x2F;Programming&#x3D;Learning&#x2F;Golang&#x2F; 中找到 Hello World：1234567package main  import &quot;fmt&quot;    func main() &#123;      fmt.Printf(&quot;Hello World\n">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-07-11T01:13:16.000Z">
+<meta property="article:modified_time" content="2025-07-12T11:18:01.981Z">
+<meta property="article:author" content="Rafferty Zheng">
+<meta property="article:tag" content="Coding">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Rafferty's Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-192.png" sizes="192x192">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-192.png" sizes="192x192">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class="">
+  <img src="/images/background.jpg" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="  ">
+    <div id="nav" class=""  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vivia-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Rafferty's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="light-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M438.5-829.913v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-829.913Zm0 747.826v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-82.087ZM877.913-438.5h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537t29.476-12.174h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T877.913-438.5Zm-747.826 0h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T82.087-521.5h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T130.087-438.5Zm660.174-290.87-34.239 32q-12.913 12.674-29.565 12.174-16.653-.5-29.327-13.174-12.674-12.673-12.554-28.826.12-16.152 12.794-28.826l33-35q12.913-12.674 30.454-12.674t30.163 12.847q12.709 12.846 12.328 30.826-.38 17.98-13.054 30.653ZM262.63-203.978l-32 34q-12.913 12.674-30.454 12.674t-30.163-12.847q-12.709-12.846-12.328-30.826.38-17.98 13.054-30.653l33.239-31q12.913-12.674 29.565-12.174 16.653.5 29.327 13.174 12.674 12.673 12.554 28.826-.12 16.152-12.794 28.826Zm466.74 33.239-32-33.239q-12.674-12.913-12.174-29.565.5-16.653 13.174-29.327 12.673-12.674 28.826-13.054 16.152-.38 28.826 12.294l35 33q12.674 12.913 12.674 30.454t-12.847 30.163q-12.846 12.709-30.826 12.328-17.98-.38-30.653-13.054ZM203.978-697.37l-34-33q-12.674-12.913-13.174-29.945-.5-17.033 12.174-29.707t31.326-13.293q18.653-.62 31.326 13.054l32 34.239q11.674 12.913 11.174 29.565-.5 16.653-13.174 29.327-12.673 12.674-28.826 12.554-16.152-.12-28.826-12.794ZM480-240q-100 0-170-70t-70-170q0-100 70-170t170-70q100 0 170 70t70 170q0 100-70 170t-170 70Zm-.247-82q65.703 0 111.475-46.272Q637-414.544 637-480.247t-45.525-111.228Q545.95-637 480.247-637t-111.475 45.525Q323-545.95 323-480.247t45.525 111.975Q414.05-322 479.753-322ZM481-481Z"/></svg></span>
+      <span class="dark-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480.239-116.413q-152.63 0-258.228-105.478Q116.413-327.37 116.413-480q0-130.935 77.739-227.435t206.304-125.043q43.022-9.631 63.87 10.869t3.478 62.805q-8.891 22.043-14.315 44.463-5.424 22.42-5.424 46.689 0 91.694 64.326 155.879 64.325 64.186 156.218 64.186 24.369 0 46.978-4.946 22.609-4.945 44.413-14.076 42.826-17.369 62.967 1.142 20.142 18.511 10.511 61.054Q807.174-280 712.63-198.206q-94.543 81.793-232.391 81.793Zm0-95q79.783 0 143.337-40.217 63.554-40.218 95.793-108.283-15.608 4.044-31.097 5.326-15.49 1.283-31.859.805-123.706-4.066-210.777-90.539-87.071-86.473-91.614-212.092-.24-16.369.923-31.978 1.164-15.609 5.446-30.978-67.826 32.478-108.282 96.152Q211.652-559.543 211.652-480q0 111.929 78.329 190.258 78.329 78.329 190.258 78.329ZM466.13-465.891Z"/></svg></span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M198-120q-25.846 0-44.23-18.384-18.384-18.385-18.384-44.23 0-25.846 18.384-44.23 18.384-18.385 44.23-18.385 25.846 0 44.23 18.385 18.384 18.384 18.384 44.23 0 25.845-18.384 44.23Q223.846-120 198-120Zm538.385 0q-18.846 0-32.923-13.769-14.076-13.769-15.922-33.23-8.692-100.616-51.077-188.654-42.385-88.039-109.885-155.539-67.5-67.501-155.539-109.885Q283-663.462 182.385-672.154q-19.461-1.846-33.23-16.23-13.769-14.385-13.769-33.846t14.076-32.922q14.077-13.461 32.923-12.23 120.076 8.692 226.038 58.768 105.961 50.077 185.73 129.846 79.769 79.769 129.846 185.731 50.077 105.961 58.769 226.038 1.231 18.846-12.538 32.922Q756.461-120 736.385-120Zm-252 0q-18.231 0-32.423-13.461t-18.653-33.538Q418.155-264.23 348.886-333.5q-69.27-69.27-166.501-84.423-20.077-4.462-33.538-18.961-13.461-14.5-13.461-33.346 0-19.076 13.884-33.23 13.884-14.153 33.115-10.922 136.769 15.384 234.384 112.999 97.615 97.615 112.999 234.384 3.231 19.23-10.538 33.115Q505.461-120 484.385-120Z"/></svg>
+      </a>
+    
+    <div id="nav-menu-btn" class="nav-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M177.37-252.282q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Zm0-186.218q-17.453 0-29.477-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T177.37-521.5h605.26q17.453 0 29.477 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T782.63-438.5H177.37Zm0-186.217q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Z"/></svg>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      
+        <image src=/images/me.jpg></image>
+      
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Hailin Zheng </div>
+      <div class="dot"></div>
+      <div class="subtitle">Stay content and upward, gentle and firm. </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://twitter.com/fishcanf1y" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://space.bilibili.com/3537118364175129?spm_id_from=333.1007.0.0" title="Bilibili"><i class="fa-brands fa-bilibili"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+
+
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Categories</h3>
+      <div class="category-box">
+            <a class="category-link" href="/categories/Coding/">
+                Coding
+                <div class="category-count">5</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Pwn/">
+                Pwn
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Crypto/">
+                Crypto
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E5%BA%95%E5%B1%82/">
+                底层
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">
+                算法
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/CTF/">
+                CTF
+                <div class="category-count">7</div>
+            </a>
+        
+            <a class="category-link" href="/categories/AI/">
+                AI
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Web%E5%AE%89%E5%85%A8/">
+                Web安全
+                <div class="category-count">4</div>
+            </a>
+        </div>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="widget-tag-list" itemprop="keywords"><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Attention/" rel="tag">Attention</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Coding/" rel="tag">Coding</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Crypto/" rel="tag">Crypto</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Deep-Learning/" rel="tag">Deep Learning</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Pwn/" rel="tag">Pwn</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web/" rel="tag">Web</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web%E5%AE%89%E5%85%A8/" rel="tag">Web安全</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/asm/" rel="tag">asm</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+       
+
+
+<article id="post-Go基础语法学习笔记" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+    
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="main-title-bar">
+  <div class="main-title-dot"></div>
+  
+    
+      <h1 class="p-name article-title" itemprop="headline name">
+        Go基础语法学习笔记
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <div class="meta-info">
+  <time class="dt-published" datetime="2025-07-11T01:13:16.000Z" itemprop="datePublished">2025-07-11</time>
+</div>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+  <a class="meta-cate-link" href="/categories/Coding/">Coding</a>
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            4k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Coding/" rel="tag">Coding</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <p><strong>Tips:</strong> 新手向文章，其中涉及的代码你可以在 <em><a target="_blank" rel="noopener" href="https://github.com/fishcanf1y/Programming=Learning/Golang/">Https://github.com/fishcanf1y/Programming=Learning/Golang/</a></em> 中找到</p>
+<h1 id="Hello-World："><a href="#Hello-World：" class="headerlink" title="Hello World："></a>Hello World：</h1><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main  </span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span>  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;  </span><br><span class="line">    fmt.Printf(<span class="string">&quot;Hello World\n&quot;</span>)  </span><br><span class="line">    <span class="comment">// go run hello.go</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>在第一行代码中 <code>package main</code> 定义了包名。你必须在源文件中非注释的第一行指明这个文件属于哪个包，如：<code>package main</code>。 <code>package main</code>表示一个可独立执行的程序，每个 <code>Go</code> 应用程序都包含一个名为 <code>main</code> 的包。</p>
+<p>下一行 <code>import &quot;fmt&quot;</code> 告诉 Go 编译器这个程序需要使用 <code>fmt</code> 包（的函数，或其他元素），<code>fmt</code> 包实现了格式化 <code>IO(输入/输出)</code>的函数。</p>
+<p>下一行 <code>func main()</code> 是程序开始执行的函数。<code>main</code> 函数是每一个可执行程序所必须包含的，一般来说都是在启动后第一个执行的函数（如果有 <code>init()</code> 函数则会先执行该函数）。</p>
+<p>下一行 <code>fmt.Println(...)</code> 可以将字符串输出到控制台，并在最后自动增加换行字符 <code>\n</code>。<br>使用 <code>fmt.Print(&quot;hello, world\n&quot;)</code> 可以得到相同的结果。<br><code>Print</code> 和 <code>Println</code> 这两个函数也支持使用变量，如：<code>fmt.Println(arr)</code>。如果没有特别指定，它们会以默认的打印格式将变量 <code>arr</code> 输出到控制台。</p>
+<p>当标识符（包括常量、变量、类型、函数名、结构字段等等）以一个大写字母开头，如：Group1，那么使用这种形式的标识符的对象就可以被外部包的代码所使用（客户端程序需要先导入这个包），这被称为导出（像面向对象语言中的 public）；标识符如果以小写字母开头，则对包外是不可见的，但是他们在整个包的内部是可见并且可用的（像面向对象语言中的 protected ）。</p>
+<p><em>Attention:<code>&#123;</code>不能单独放在一行，所以以下代码在运行时会产生错误：</em></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  </span><br><span class="line">&#123;  <span class="comment">// 错误，&#123; 不能在单独的行上</span></span><br><span class="line">    fmt.Println(<span class="string">&quot;Hello, World!&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="关于包："><a href="#关于包：" class="headerlink" title="关于包："></a>关于包：</h2><p>关于包，在本地测试得到以下几点</p>
+<ul>
+<li>文件名与包名没有直接关系，不一定要将文件名与包名定成同一个。</li>
+<li>同一个文件夹下的文件只能有一个包名，否则编译报错。</li>
+</ul>
+<h3 id="测试："><a href="#测试：" class="headerlink" title="测试："></a>测试：</h3><p><strong>文件结构：</strong></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Test</span><br><span class="line">--helloworld.<span class="keyword">go</span></span><br><span class="line"></span><br><span class="line">myMath</span><br><span class="line">--myMath1.<span class="keyword">go</span></span><br><span class="line">--myMath2.<span class="keyword">go</span></span><br></pre></td></tr></table></figure>
+<p><strong>测试代码：</strong></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// helloworld.go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;./myMath&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;Hello World!&quot;</span>)</span><br><span class="line">	fmt.Println(mathClass.Add(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">	fmt.Println(mathClass.Sub(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// myMath1.go</span></span><br><span class="line"><span class="keyword">package</span> mathClass</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Add</span><span class="params">(x <span class="type">int</span>, y <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> x + y</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// myMath2.go</span></span><br><span class="line"><span class="keyword">package</span> mathClass</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sub</span><span class="params">(x <span class="type">int</span>, y <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> x - y</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Go标记"><a href="#Go标记" class="headerlink" title="Go标记"></a>Go标记</h1><p>Go程序可以由多个标记组成，可以是关键字、标识符、常量、字符串和符号等。如以下程序由6个标记组成：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt.Printf(<span class="string">&quot;Hello World!&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>6个标记分别是这些</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> .fmt</span><br><span class="line"><span class="number">2.</span> .</span><br><span class="line"><span class="number">3.</span> Printf</span><br><span class="line"><span class="number">4.</span> (</span><br><span class="line"><span class="number">5.</span> <span class="string">&quot;Hello World!&quot;</span></span><br><span class="line"><span class="number">6.</span> )</span><br></pre></td></tr></table></figure>
+
+<h1 id="行分隔符"><a href="#行分隔符" class="headerlink" title="行分隔符"></a>行分隔符</h1><p>在Go程序中，一行代表一个语句结束，每一个语句不需要像C家族的语言中添加分号，如果打算将多个语句写在同一行，它们则必须使用 <code>;</code> 以人为区分，实际开发中并不鼓励这种做法。</p>
+<p><em>This is am example:</em></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fmt.Println(<span class="string">&quot;Hello, World!&quot;</span>)</span><br><span class="line">fmt.Println(<span class="string">&quot;Hello, Golang!&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h1><p>注释的内容不会被编译，单行注释是最常见的注释形式，你可以在任何地方使用以 <code>//</code> 开头的单行注释。多行注释也叫块注释，均已以 <code>/*</code> 开头，并以 <code>*/</code> 结尾。如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单行注释</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> Author by fishcanf1y</span></span><br><span class="line"><span class="comment"> 我是多行注释</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="标识符"><a href="#标识符" class="headerlink" title="标识符"></a>标识符</h1><p>标识符用来命名变量、类型等程序实体。一个标识符实际上就是一个或是多个字母(A<del>Z和a</del>z)数字(0~9)、下划线_组成的序列，但是第一个字符必须是字母或下划线而不能是数字。</p>
+<p>以下是有效的标识符：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mahesh   kumar   abc   move_name   a_123</span><br><span class="line">myname50   _temp   j   a23b9   retVal</span><br></pre></td></tr></table></figure>
+<p>以下是无效的标识符：</p>
+<ul>
+<li>1ab（以数字开头）</li>
+<li>case（Go 语言的关键字）</li>
+<li>a+b（运算符是不允许的）</li>
+</ul>
+<h1 id="字符串链接"><a href="#字符串链接" class="headerlink" title="字符串链接"></a>字符串链接</h1><p>Go语言的字符串连接可以通过<code>+</code>来实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;Hello&quot;</span> + <span class="string">&quot;Google&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h1><p>以下列举Go代码中会使用到的25个关键字或保留字：</p>
+<table>
+<thead>
+<tr>
+<th>Keywords</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>break</td>
+<td>终止最内层的for或switch语句</td>
+</tr>
+<tr>
+<td>default</td>
+<td>switch语句中的默认分支</td>
+</tr>
+<tr>
+<td>func</td>
+<td>定义函数</td>
+</tr>
+<tr>
+<td>interface</td>
+<td>定义接口</td>
+</tr>
+<tr>
+<td>select</td>
+<td>多路复用操作</td>
+</tr>
+<tr>
+<td>case</td>
+<td>switch语句的分支</td>
+</tr>
+<tr>
+<td>defer</td>
+<td>延迟执行</td>
+</tr>
+<tr>
+<td>go</td>
+<td>启动新的goroutine</td>
+</tr>
+<tr>
+<td>map</td>
+<td>映射类型</td>
+</tr>
+<tr>
+<td>struct</td>
+<td>结构体定义</td>
+</tr>
+<tr>
+<td>chan</td>
+<td>通道类型</td>
+</tr>
+<tr>
+<td>else</td>
+<td>if-else语句中的备选分支</td>
+</tr>
+<tr>
+<td>goto</td>
+<td>无条件跳转到标签</td>
+</tr>
+<tr>
+<td>package</td>
+<td>包声明</td>
+</tr>
+<tr>
+<td>switch</td>
+<td>分支控制结构</td>
+</tr>
+<tr>
+<td>const</td>
+<td>常量定义</td>
+</tr>
+<tr>
+<td>fallthrough</td>
+<td>继续执行下一case或default</td>
+</tr>
+<tr>
+<td>if</td>
+<td>条件判断</td>
+</tr>
+<tr>
+<td>range</td>
+<td>迭代操作</td>
+</tr>
+<tr>
+<td>type</td>
+<td>类型定义</td>
+</tr>
+<tr>
+<td>continue</td>
+<td>跳过当前循环，继续下一次循环</td>
+</tr>
+<tr>
+<td>for</td>
+<td>循环控制结构</td>
+</tr>
+<tr>
+<td>import</td>
+<td>包引入</td>
+</tr>
+<tr>
+<td>return</td>
+<td>函数返回</td>
+</tr>
+<tr>
+<td>var</td>
+<td>变量声明</td>
+</tr>
+</tbody></table>
+<p>除以上所介绍的关键字，Go语言还有36个预定义标识符：</p>
+<table>
+<thead>
+<tr>
+<th>Keywords</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>append</td>
+<td>添加元素到切片</td>
+</tr>
+<tr>
+<td>bool</td>
+<td>布尔类型</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>字节类型</td>
+</tr>
+<tr>
+<td>cap</td>
+<td>获取切片的容量</td>
+</tr>
+<tr>
+<td>close</td>
+<td>关闭通道</td>
+</tr>
+<tr>
+<td>complex</td>
+<td>复数类型</td>
+</tr>
+<tr>
+<td>complex64</td>
+<td>32位复数类型</td>
+</tr>
+<tr>
+<td>complex128</td>
+<td>64位复数类型</td>
+</tr>
+<tr>
+<td>uint16</td>
+<td>无符号16位整数类型</td>
+</tr>
+<tr>
+<td>copy</td>
+<td>拷贝切片或数组</td>
+</tr>
+<tr>
+<td>false</td>
+<td>布尔值，假</td>
+</tr>
+<tr>
+<td>float32</td>
+<td>单精度浮点数类型</td>
+</tr>
+<tr>
+<td>float64</td>
+<td>双精度浮点数类型</td>
+</tr>
+<tr>
+<td>imag</td>
+<td>获取复数的虚部</td>
+</tr>
+<tr>
+<td>int</td>
+<td>整型</td>
+</tr>
+<tr>
+<td>int8</td>
+<td>8位有符号整数类型</td>
+</tr>
+<tr>
+<td>int16</td>
+<td>16位有符号整数类型</td>
+</tr>
+<tr>
+<td>uint32</td>
+<td>无符号32位整数类型</td>
+</tr>
+<tr>
+<td>int32</td>
+<td>32位有符号整数类型</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>64位有符号整数类型</td>
+</tr>
+<tr>
+<td>iota</td>
+<td>常量生成器</td>
+</tr>
+<tr>
+<td>len</td>
+<td>获取切片或字符串的长度</td>
+</tr>
+<tr>
+<td>make</td>
+<td>创建并初始化类型</td>
+</tr>
+<tr>
+<td>new</td>
+<td>分配零值内存</td>
+</tr>
+<tr>
+<td>nil</td>
+<td>空值</td>
+</tr>
+<tr>
+<td>panic</td>
+<td>引发运行时错误</td>
+</tr>
+<tr>
+<td>uint64</td>
+<td>无符号64位整数类型</td>
+</tr>
+<tr>
+<td>print</td>
+<td>打印输出</td>
+</tr>
+<tr>
+<td>println</td>
+<td>打印并换行</td>
+</tr>
+<tr>
+<td>real</td>
+<td>获取复数的实部</td>
+</tr>
+<tr>
+<td>recover</td>
+<td>恢复panic引起的错误</td>
+</tr>
+<tr>
+<td>string</td>
+<td>字符串类型</td>
+</tr>
+<tr>
+<td>true</td>
+<td>布尔值，真</td>
+</tr>
+<tr>
+<td>uint</td>
+<td>无符号整数类型</td>
+</tr>
+<tr>
+<td>uint8</td>
+<td>无符号8位整数类型</td>
+</tr>
+<tr>
+<td>uintptr</td>
+<td>无符号指针类型</td>
+</tr>
+</tbody></table>
+<h1 id="Go语言中的空格"><a href="#Go语言中的空格" class="headerlink" title="Go语言中的空格"></a>Go语言中的空格</h1><p>在 Go 语言中，空格通常用于分隔标识符、关键字、运算符和表达式，以提高代码的可读性。<br>Go 语言中变量的声明必须使用空格隔开，如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x <span class="type">int</span></span><br><span class="line"><span class="keyword">const</span> Pi <span class="type">float64</span> = <span class="number">3.14159265358979323846</span></span><br></pre></td></tr></table></figure>
+<p>在运算符和操作数之间要使用空格能让程序更易阅读</p>
+<p>无空格：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fruit=apples+oranges;</span><br></pre></td></tr></table></figure>
+<p>在关键字和表达式之间要使用空格。</p>
+<p>例如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> x &gt; <span class="number">0</span> &#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在函数调用时，函数名和左边等号之间要使用空格，参数之间也要使用空格。</p>
+<p>例如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result := add(<span class="number">2</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="格式化字符串"><a href="#格式化字符串" class="headerlink" title="格式化字符串"></a>格式化字符串</h1><p>Go 语言中使用 <code>fmt.Sprintf</code> 或 <code>fmt.Printf</code> 格式化字符串并赋值给新串：</p>
+<p><code>Sprintf</code> 根据格式化参数生成格式化的字符串并返回该字符串。<br><code>Printf</code> 根据格式化参数生成格式化的字符串并写入标准输出。</p>
+<p><em>Sprintf示例：</em></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   <span class="comment">// %d 表示整型数字，%s 表示字符串</span></span><br><span class="line">    <span class="keyword">var</span> stockcode=<span class="number">123</span></span><br><span class="line">    <span class="keyword">var</span> enddate=<span class="string">&quot;2025-07-11&quot;</span></span><br><span class="line">    <span class="keyword">var</span> url=<span class="string">&quot;Code=%d&amp;endDate=%s&quot;</span></span><br><span class="line">    <span class="keyword">var</span> target_url=fmt.Sprintf(url,stockcode,enddate)</span><br><span class="line">    fmt.Println(target_url)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Code=123&amp;endDate=2025-07-11</span><br></pre></td></tr></table></figure>
+
+<p><em>Printf示例：</em></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> stockcode = <span class="number">123</span></span><br><span class="line">	<span class="keyword">var</span> enddate = <span class="string">&quot;2025-07-11&quot;</span></span><br><span class="line">	<span class="keyword">var</span> url = <span class="string">&quot;Code=%d&amp;endDate=%s&quot;</span></span><br><span class="line">	fmt.Printf(url, stockcode, enddate)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Code=123&amp;endDate=2025-07-11</span><br></pre></td></tr></table></figure>
+
+<script src="https://giscus.app/client.js"
+        data-repo="fishcanf1y/fishcanf1y.github.io"
+        data-repo-id="R_kgDONzaTTQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONzaTTc4Cpqn7"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+        
+      </div>
+
+       
+        <footer class="article-footer">
+           
+        </footer>
+         
+    </div>
+    
+     
+  </div>
+  
+    
+<nav id="article-nav">
+  <a class="article-nav-btn left "
+    
+      href="/2025/07/11/md5verifier-20250711/"
+      title="How to design an MD5 verifier"
+     >
+    <i class="fa-solid fa-angle-left"></i>
+    <p class="title-text">
+      
+        How to design an MD5 verifier
+        
+    </p>
+  </a>
+  <a class="article-nav-btn right "
+    
+      href="/2025/07/10/About-20250210/"
+      title="Some Things You May Want to Know"
+     >
+
+    <p class="title-text">
+      
+        Some Things You May Want to Know
+        
+    </p>
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</nav>
+
+
+  
+</article>
+
+
+  
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <div id="comment-card" class="comment-card">
+    <div class="main-title-bar">
+      <div class="main-title-dot"></div>
+      <div class="main-title">Comments </div>
+    </div>
+    <div id="vcomments"></div>
+  </div>
+  <script>
+      new Valine({"enable":true,"appId":null,"appKey":null,"placeholder":"Just go go","pageSize":10,"highlight":true,"serverURLs":null,"el":"#vcomments"});
+  </script>
+
+
+
+
+
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2025 Hailin Zheng<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vivia">Vivia</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn hide" onclick="topFunction()">
+        <i class="fa-solid fa-angle-up"></i>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.classList.remove('hide')
+        } else {
+            btn.classList.add('hide')
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>

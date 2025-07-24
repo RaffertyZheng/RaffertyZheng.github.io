@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+
+  
+  <title>How to design an MD5 verifier - 后记 | Rafferty&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" href="/css/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+  <link rel="preload" href="/css/fonts/Roboto-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <meta name="description" content="后记：在MD5-Checker 项目开发中，我也遇到了很多知识面缺陷的问题，于是在开发过程中我选择使用了AI来辅助开发（学艺不精）在此，我根据AI的建议，梳理了一份思路——如何成为一名合格的Devloper 以下是针对MD5校验工具设计思路所涉及的软件工程原则（以MD5-Checker开发为例）、经典理论以及对应的学习吸收方法的系统化总结：  一、涉及的核心理论与原则1. 模块化设计 SOLID原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to design an MD5 verifier - 后记">
+<meta property="og:url" content="https://raffertyzheng.github.io/2025/07/12/verifier-talk/index.html">
+<meta property="og:site_name" content="Rafferty&#39;s Blog">
+<meta property="og:description" content="后记：在MD5-Checker 项目开发中，我也遇到了很多知识面缺陷的问题，于是在开发过程中我选择使用了AI来辅助开发（学艺不精）在此，我根据AI的建议，梳理了一份思路——如何成为一名合格的Devloper 以下是针对MD5校验工具设计思路所涉及的软件工程原则（以MD5-Checker开发为例）、经典理论以及对应的学习吸收方法的系统化总结：  一、涉及的核心理论与原则1. 模块化设计 SOLID原">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-07-12T13:16:23.000Z">
+<meta property="article:modified_time" content="2025-07-19T01:19:14.395Z">
+<meta property="article:author" content="Rafferty Zheng">
+<meta property="article:tag" content="Coding">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Rafferty's Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-192.png" sizes="192x192">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-192.png" sizes="192x192">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class="">
+  <img src="/images/background.jpg" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="  ">
+    <div id="nav" class=""  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vivia-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Rafferty's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="light-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M438.5-829.913v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-829.913Zm0 747.826v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-82.087ZM877.913-438.5h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537t29.476-12.174h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T877.913-438.5Zm-747.826 0h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T82.087-521.5h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T130.087-438.5Zm660.174-290.87-34.239 32q-12.913 12.674-29.565 12.174-16.653-.5-29.327-13.174-12.674-12.673-12.554-28.826.12-16.152 12.794-28.826l33-35q12.913-12.674 30.454-12.674t30.163 12.847q12.709 12.846 12.328 30.826-.38 17.98-13.054 30.653ZM262.63-203.978l-32 34q-12.913 12.674-30.454 12.674t-30.163-12.847q-12.709-12.846-12.328-30.826.38-17.98 13.054-30.653l33.239-31q12.913-12.674 29.565-12.174 16.653.5 29.327 13.174 12.674 12.673 12.554 28.826-.12 16.152-12.794 28.826Zm466.74 33.239-32-33.239q-12.674-12.913-12.174-29.565.5-16.653 13.174-29.327 12.673-12.674 28.826-13.054 16.152-.38 28.826 12.294l35 33q12.674 12.913 12.674 30.454t-12.847 30.163q-12.846 12.709-30.826 12.328-17.98-.38-30.653-13.054ZM203.978-697.37l-34-33q-12.674-12.913-13.174-29.945-.5-17.033 12.174-29.707t31.326-13.293q18.653-.62 31.326 13.054l32 34.239q11.674 12.913 11.174 29.565-.5 16.653-13.174 29.327-12.673 12.674-28.826 12.554-16.152-.12-28.826-12.794ZM480-240q-100 0-170-70t-70-170q0-100 70-170t170-70q100 0 170 70t70 170q0 100-70 170t-170 70Zm-.247-82q65.703 0 111.475-46.272Q637-414.544 637-480.247t-45.525-111.228Q545.95-637 480.247-637t-111.475 45.525Q323-545.95 323-480.247t45.525 111.975Q414.05-322 479.753-322ZM481-481Z"/></svg></span>
+      <span class="dark-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480.239-116.413q-152.63 0-258.228-105.478Q116.413-327.37 116.413-480q0-130.935 77.739-227.435t206.304-125.043q43.022-9.631 63.87 10.869t3.478 62.805q-8.891 22.043-14.315 44.463-5.424 22.42-5.424 46.689 0 91.694 64.326 155.879 64.325 64.186 156.218 64.186 24.369 0 46.978-4.946 22.609-4.945 44.413-14.076 42.826-17.369 62.967 1.142 20.142 18.511 10.511 61.054Q807.174-280 712.63-198.206q-94.543 81.793-232.391 81.793Zm0-95q79.783 0 143.337-40.217 63.554-40.218 95.793-108.283-15.608 4.044-31.097 5.326-15.49 1.283-31.859.805-123.706-4.066-210.777-90.539-87.071-86.473-91.614-212.092-.24-16.369.923-31.978 1.164-15.609 5.446-30.978-67.826 32.478-108.282 96.152Q211.652-559.543 211.652-480q0 111.929 78.329 190.258 78.329 78.329 190.258 78.329ZM466.13-465.891Z"/></svg></span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M198-120q-25.846 0-44.23-18.384-18.384-18.385-18.384-44.23 0-25.846 18.384-44.23 18.384-18.385 44.23-18.385 25.846 0 44.23 18.385 18.384 18.384 18.384 44.23 0 25.845-18.384 44.23Q223.846-120 198-120Zm538.385 0q-18.846 0-32.923-13.769-14.076-13.769-15.922-33.23-8.692-100.616-51.077-188.654-42.385-88.039-109.885-155.539-67.5-67.501-155.539-109.885Q283-663.462 182.385-672.154q-19.461-1.846-33.23-16.23-13.769-14.385-13.769-33.846t14.076-32.922q14.077-13.461 32.923-12.23 120.076 8.692 226.038 58.768 105.961 50.077 185.73 129.846 79.769 79.769 129.846 185.731 50.077 105.961 58.769 226.038 1.231 18.846-12.538 32.922Q756.461-120 736.385-120Zm-252 0q-18.231 0-32.423-13.461t-18.653-33.538Q418.155-264.23 348.886-333.5q-69.27-69.27-166.501-84.423-20.077-4.462-33.538-18.961-13.461-14.5-13.461-33.346 0-19.076 13.884-33.23 13.884-14.153 33.115-10.922 136.769 15.384 234.384 112.999 97.615 97.615 112.999 234.384 3.231 19.23-10.538 33.115Q505.461-120 484.385-120Z"/></svg>
+      </a>
+    
+    <div id="nav-menu-btn" class="nav-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M177.37-252.282q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Zm0-186.218q-17.453 0-29.477-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T177.37-521.5h605.26q17.453 0 29.477 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T782.63-438.5H177.37Zm0-186.217q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Z"/></svg>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      
+        <image src=/images/me.jpg></image>
+      
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Hailin Zheng </div>
+      <div class="dot"></div>
+      <div class="subtitle">Stay content and upward, gentle and firm. </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://twitter.com/fishcanf1y" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://space.bilibili.com/3537118364175129?spm_id_from=333.1007.0.0" title="Bilibili"><i class="fa-brands fa-bilibili"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+
+
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Categories</h3>
+      <div class="category-box">
+            <a class="category-link" href="/categories/Coding/">
+                Coding
+                <div class="category-count">5</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Pwn/">
+                Pwn
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Crypto/">
+                Crypto
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E5%BA%95%E5%B1%82/">
+                底层
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">
+                算法
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/CTF/">
+                CTF
+                <div class="category-count">7</div>
+            </a>
+        
+            <a class="category-link" href="/categories/AI/">
+                AI
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Web%E5%AE%89%E5%85%A8/">
+                Web安全
+                <div class="category-count">4</div>
+            </a>
+        </div>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="widget-tag-list" itemprop="keywords"><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Attention/" rel="tag">Attention</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Coding/" rel="tag">Coding</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Crypto/" rel="tag">Crypto</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Deep-Learning/" rel="tag">Deep Learning</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Pwn/" rel="tag">Pwn</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web/" rel="tag">Web</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web%E5%AE%89%E5%85%A8/" rel="tag">Web安全</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/asm/" rel="tag">asm</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+       
+
+
+<article id="post-verifier-talk" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+    
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="main-title-bar">
+  <div class="main-title-dot"></div>
+  
+    
+      <h1 class="p-name article-title" itemprop="headline name">
+        How to design an MD5 verifier - 后记
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <div class="meta-info">
+  <time class="dt-published" datetime="2025-07-12T13:16:23.000Z" itemprop="datePublished">2025-07-12</time>
+</div>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+  <a class="meta-cate-link" href="/categories/Coding/">Coding</a>
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            1.9k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Coding/" rel="tag">Coding</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <h1 id="后记："><a href="#后记：" class="headerlink" title="后记："></a>后记：</h1><p>在<code>MD5-Checker</code> 项目开发中，我也遇到了很多知识面缺陷的问题，于是在开发过程中我选择使用了AI来辅助开发（学艺不精）在此，我根据AI的建议，梳理了一份思路——如何成为一名合格的Devloper</p>
+<p>以下是针对MD5校验工具设计思路所涉及的软件工程原则（以MD5-Checker开发为例）、经典理论以及对应的学习吸收方法的系统化总结：</p>
+<hr>
+<h3 id="一、涉及的核心理论与原则"><a href="#一、涉及的核心理论与原则" class="headerlink" title="一、涉及的核心理论与原则"></a>一、涉及的核心理论与原则</h3><h4 id="1-模块化设计"><a href="#1-模块化设计" class="headerlink" title="1. 模块化设计"></a>1. <strong>模块化设计</strong></h4><ul>
+<li><strong>SOLID原则</strong>（尤其是单一职责原则）<ul>
+<li>每个函数只做一件事（如<code>calculate_md5</code>仅负责计算）</li>
+<li>参考：《Clean Code》by Robert C. Martin</li>
+</ul>
+</li>
+<li><strong>关注点分离(SoC)</strong><ul>
+<li>CLI解析、业务逻辑、文件操作分层处理</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-性能优化"><a href="#2-性能优化" class="headerlink" title="2. 性能优化"></a>2. <strong>性能优化</strong></h4><ul>
+<li><strong>I&#x2F;O效率原则</strong><ul>
+<li>分块大小选择（64KB）涉及《操作系统概念》中的磁盘预读策略</li>
+<li>参考：Linux内核的<code>readahead</code>机制</li>
+</ul>
+</li>
+<li><strong>时间&#x2F;空间权衡</strong><ul>
+<li>内存分块 vs 计算速度的平衡（《算法导论》第17章平摊分析）</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-错误处理"><a href="#3-错误处理" class="headerlink" title="3. 错误处理"></a>3. <strong>错误处理</strong></h4><ul>
+<li><strong>防御式编程</strong><ul>
+<li><code>try/except</code>处理文件操作（《代码大全》第8章）</li>
+</ul>
+</li>
+<li><strong>契约设计</strong><ul>
+<li>函数输入&#x2F;输出约定（如<code>verify_md5</code>返回布尔值）</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-接口设计"><a href="#4-接口设计" class="headerlink" title="4. 接口设计"></a>4. <strong>接口设计</strong></h4><ul>
+<li><strong>Unix哲学</strong><ul>
+<li>“Do One Thing and Do It Well”（命令行工具设计）</li>
+<li>参考：《The Art of Unix Programming》</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-可扩展性"><a href="#5-可扩展性" class="headerlink" title="5. 可扩展性"></a>5. <strong>可扩展性</strong></h4><ul>
+<li><strong>开放封闭原则(OCP)</strong><ul>
+<li>通过<code>hashlib.new()</code>预留多算法支持</li>
+<li>参考：《设计模式：可复用面向对象软件的基础》</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="二、学习吸收方法论"><a href="#二、学习吸收方法论" class="headerlink" title="二、学习吸收方法论"></a>二、学习吸收方法论</h3><h4 id="1-理论-→-实践循环"><a href="#1-理论-→-实践循环" class="headerlink" title="1. 理论 → 实践循环"></a>1. <strong>理论 → 实践循环</strong></h4><ul>
+<li><strong>步骤</strong>：<ol>
+<li>阅读《Clean Code》函数设计章节 → 重构自己的函数</li>
+<li>研究Linux文件系统预读机制 → 调整<code>block_size</code>测试性能</li>
+<li>学习SOLID原则 → 分析工具中哪些模块符合&#x2F;违反原则</li>
+</ol>
+</li>
+</ul>
+<h4 id="2-代码考古学"><a href="#2-代码考古学" class="headerlink" title="2. 代码考古学"></a>2. <strong>代码考古学</strong></h4><ul>
+<li><p><strong>经典工具对比学习</strong>：</p>
+<p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 研究GNU coreutils的md5sum实现</span><br><span class="line">git clone git://git.sv.gnu.org/coreutils</span><br><span class="line">grep -r &quot;BLOCKSIZE&quot; src/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Python生态参考</strong>：</p>
+<ul>
+<li>对比<code>hashlib</code>与<code>cryptography</code>库的设计差异</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-量化分析实践"><a href="#3-量化分析实践" class="headerlink" title="3. 量化分析实践"></a>3. <strong>量化分析实践</strong></h4><ul>
+<li><p><strong>性能基准测试</strong>：</p>
+<p>python</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import timeit</span><br><span class="line">timeit.timeit(&#x27;calculate_md5(&quot;large_file.iso&quot;, block_size=8192)&#x27;, number=10)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>内存分析</strong>：</p>
+<p>bash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m memory_profiler md5_tool.py</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="4-设计模式映射"><a href="#4-设计模式映射" class="headerlink" title="4. 设计模式映射"></a>4. <strong>设计模式映射</strong></h4><ul>
+<li><p><strong>识别模式应用</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">模式</th>
+<th align="left">本工具实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">模板方法</td>
+<td align="left"><code>calculate_md5</code>的分块处理流程</td>
+</tr>
+<tr>
+<td align="left">工厂方法</td>
+<td align="left"><code>hashlib.md5()</code>构造函数</td>
+</tr>
+<tr>
+<td align="left">命令模式</td>
+<td align="left">argparse子命令实现</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h4 id="5-刻意练习路线"><a href="#5-刻意练习路线" class="headerlink" title="5. 刻意练习路线"></a>5. <strong>刻意练习路线</strong></h4><ol>
+<li><strong>基础阶段</strong>：<ul>
+<li>实现单文件MD5计算（理解分块哈希）</li>
+<li>添加单元测试（文件不存在、空文件等case）</li>
+</ul>
+</li>
+<li><strong>进阶阶段</strong>：<ul>
+<li>增加SHA-256支持（实践开放封闭原则）</li>
+<li>实现多线程批量计算（学习GIL限制）</li>
+</ul>
+</li>
+<li><strong>高级阶段</strong>：<ul>
+<li>开发VS Code插件调用该工具（接口设计实践）</li>
+<li>用Rust重写性能关键部分（FFI交互学习）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="三、推荐学习资源"><a href="#三、推荐学习资源" class="headerlink" title="三、推荐学习资源"></a>三、推荐学习资源</h3><h4 id="1-必读经典"><a href="#1-必读经典" class="headerlink" title="1. 必读经典"></a>1. <strong>必读经典</strong></h4><ul>
+<li>《代码大全》第5章（设计）、第8章（防御式编程）</li>
+<li>《Unix编程艺术》第1章（模块化）、第7章（接口设计）</li>
+</ul>
+<h4 id="2-论文参考"><a href="#2-论文参考" class="headerlink" title="2. 论文参考"></a>2. <strong>论文参考</strong></h4><ul>
+<li><em>The MD5 Message-Digest Algorithm</em> (RFC 1321)</li>
+<li><em>A Quantitative Study of File Systems’ Block Size Selection</em> (FAST’13)</li>
+</ul>
+<h4 id="3-实践项目"><a href="#3-实践项目" class="headerlink" title="3. 实践项目"></a>3. <strong>实践项目</strong></h4><ul>
+<li>GNU coreutils源码（md5sum实现）</li>
+<li>Python标准库<code>hashlib</code>的C实现（<code>_hashlib.c</code>）</li>
+</ul>
+<h4 id="4-可视化学习"><a href="#4-可视化学习" class="headerlink" title="4. 可视化学习"></a>4. <strong>可视化学习</strong></h4><ul>
+<li>MD5算法可视化：<a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html">https://www.cs.usfca.edu/~galles/visualization/Algorithms.html</a></li>
+<li>I&#x2F;O缓冲区交互演示：<a target="_blank" rel="noopener" href="https://www.linuxatemyram.com/">https://www.linuxatemyram.com/</a></li>
+</ul>
+<hr>
+<h3 id="四、知识吸收检查表"><a href="#四、知识吸收检查表" class="headerlink" title="四、知识吸收检查表"></a>四、知识吸收检查表</h3><p>当你认为自己已掌握某个概念时，尝试回答：</p>
+<table>
+<thead>
+<tr>
+<th align="left">检查项</th>
+<th align="left">是&#x2F;否</th>
+<th align="left">示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">能解释64KB块大小的选择依据？</td>
+<td align="left">✓</td>
+<td align="left">磁盘扇区对齐、内存页大小</td>
+</tr>
+<tr>
+<td align="left">能画出数据流图？</td>
+<td align="left">✓</td>
+<td align="left">文件→分块→哈希更新→hexdigest</td>
+</tr>
+<tr>
+<td align="left">能列举3种替代设计方案？</td>
+<td align="left">✓</td>
+<td align="left">mmap映射、内存视图、GPU加速</td>
+</tr>
+<tr>
+<td align="left">能说明异常处理的设计取舍？</td>
+<td align="left">✓</td>
+<td align="left">返回None vs 抛出异常</td>
+</tr>
+</tbody></table>
+<hr>
+<p>通过这种结构化学习路径，你可以将工具开发经验转化为可迁移的软件工程能力，逐步构建自己的系统设计思维体系。</p>
+<p>上了个置顶，遍笔者和各位朋友慢慢消化吸收</p>
+<script src="https://giscus.app/client.js"
+        data-repo="fishcanf1y/fishcanf1y.github.io"
+        data-repo-id="R_kgDONzaTTQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONzaTTc4Cpqn7"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+        
+      </div>
+
+       
+        <footer class="article-footer">
+           
+        </footer>
+         
+    </div>
+    
+     
+  </div>
+  
+    
+<nav id="article-nav">
+  <a class="article-nav-btn left "
+    
+      href="/2025/07/12/%E5%85%B3%E4%BA%8EPython%E6%89%93%E5%8C%85%E6%88%90EXE%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/"
+      title="关于Python打包成EXE的那些事"
+     >
+    <i class="fa-solid fa-angle-left"></i>
+    <p class="title-text">
+      
+        关于Python打包成EXE的那些事
+        
+    </p>
+  </a>
+  <a class="article-nav-btn right "
+    
+      href="/2025/07/12/P1149-Matchstick/"
+      title="P1149 [NOIP 2008 提高组] 火柴棒等式"
+     >
+
+    <p class="title-text">
+      
+        P1149 [NOIP 2008 提高组] 火柴棒等式
+        
+    </p>
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</nav>
+
+
+  
+</article>
+
+
+  
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <div id="comment-card" class="comment-card">
+    <div class="main-title-bar">
+      <div class="main-title-dot"></div>
+      <div class="main-title">Comments </div>
+    </div>
+    <div id="vcomments"></div>
+  </div>
+  <script>
+      new Valine({"enable":true,"appId":null,"appKey":null,"placeholder":"Just go go","pageSize":10,"highlight":true,"serverURLs":null,"el":"#vcomments"});
+  </script>
+
+
+
+
+
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2025 Hailin Zheng<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vivia">Vivia</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn hide" onclick="topFunction()">
+        <i class="fa-solid fa-angle-up"></i>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.classList.remove('hide')
+        } else {
+            btn.classList.add('hide')
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>

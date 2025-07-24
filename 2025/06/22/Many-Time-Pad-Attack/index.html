@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet">
+<link href="https://cdn.staticfile.org/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  
+
+  
+  <title>Many Time Pad Attack | Rafferty&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" href="/css/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+  <link rel="preload" href="/css/fonts/Roboto-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <meta name="description" content="一些基础知识符号： ⊕ 代表异或 C1 代表密文 M1 代表明文 性质：  交换律 结合律 (a ⊕ b ) ⊕ c &#x3D; a⊕ ( b ⊕ c) 任何数x x ⊕ x &#x3D; 0 x ⊕ 0 &#x3D; X 自反性 x ⊕ b ⊕ b &#x3D; x ⊕ 0 &#x3D; x  DescriptionMany-Time-Pad (多时间垫) 攻击是一种针对多次使用相同密钥的流密">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Many Time Pad Attack">
+<meta property="og:url" content="https://raffertyzheng.github.io/2025/06/22/Many-Time-Pad-Attack/index.html">
+<meta property="og:site_name" content="Rafferty&#39;s Blog">
+<meta property="og:description" content="一些基础知识符号： ⊕ 代表异或 C1 代表密文 M1 代表明文 性质：  交换律 结合律 (a ⊕ b ) ⊕ c &#x3D; a⊕ ( b ⊕ c) 任何数x x ⊕ x &#x3D; 0 x ⊕ 0 &#x3D; X 自反性 x ⊕ b ⊕ b &#x3D; x ⊕ 0 &#x3D; x  DescriptionMany-Time-Pad (多时间垫) 攻击是一种针对多次使用相同密钥的流密">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-06-22T03:37:00.000Z">
+<meta property="article:modified_time" content="2025-07-14T04:57:34.374Z">
+<meta property="article:author" content="Rafferty Zheng">
+<meta property="article:tag" content="Crypto">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Rafferty's Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/images/favicon-light-192.png" sizes="192x192">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-32.png" sizes="32x32">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-128.png" sizes="128x128">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-180.png" sizes="180x180">
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/images/favicon-dark-192.png" sizes="192x192">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class="">
+  <img src="/images/background.jpg" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="  ">
+    <div id="nav" class=""  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vivia-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Rafferty's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="light-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M438.5-829.913v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-829.913Zm0 747.826v-48q0-17.452 11.963-29.476 11.964-12.024 29.326-12.024 17.363 0 29.537 12.024t12.174 29.476v48q0 17.452-11.963 29.476-11.964 12.024-29.326 12.024-17.363 0-29.537-12.024T438.5-82.087ZM877.913-438.5h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537t29.476-12.174h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T877.913-438.5Zm-747.826 0h-48q-17.452 0-29.476-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T82.087-521.5h48q17.452 0 29.476 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T130.087-438.5Zm660.174-290.87-34.239 32q-12.913 12.674-29.565 12.174-16.653-.5-29.327-13.174-12.674-12.673-12.554-28.826.12-16.152 12.794-28.826l33-35q12.913-12.674 30.454-12.674t30.163 12.847q12.709 12.846 12.328 30.826-.38 17.98-13.054 30.653ZM262.63-203.978l-32 34q-12.913 12.674-30.454 12.674t-30.163-12.847q-12.709-12.846-12.328-30.826.38-17.98 13.054-30.653l33.239-31q12.913-12.674 29.565-12.174 16.653.5 29.327 13.174 12.674 12.673 12.554 28.826-.12 16.152-12.794 28.826Zm466.74 33.239-32-33.239q-12.674-12.913-12.174-29.565.5-16.653 13.174-29.327 12.673-12.674 28.826-13.054 16.152-.38 28.826 12.294l35 33q12.674 12.913 12.674 30.454t-12.847 30.163q-12.846 12.709-30.826 12.328-17.98-.38-30.653-13.054ZM203.978-697.37l-34-33q-12.674-12.913-13.174-29.945-.5-17.033 12.174-29.707t31.326-13.293q18.653-.62 31.326 13.054l32 34.239q11.674 12.913 11.174 29.565-.5 16.653-13.174 29.327-12.673 12.674-28.826 12.554-16.152-.12-28.826-12.794ZM480-240q-100 0-170-70t-70-170q0-100 70-170t170-70q100 0 170 70t70 170q0 100-70 170t-170 70Zm-.247-82q65.703 0 111.475-46.272Q637-414.544 637-480.247t-45.525-111.228Q545.95-637 480.247-637t-111.475 45.525Q323-545.95 323-480.247t45.525 111.975Q414.05-322 479.753-322ZM481-481Z"/></svg></span>
+      <span class="dark-mode-icon"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M480.239-116.413q-152.63 0-258.228-105.478Q116.413-327.37 116.413-480q0-130.935 77.739-227.435t206.304-125.043q43.022-9.631 63.87 10.869t3.478 62.805q-8.891 22.043-14.315 44.463-5.424 22.42-5.424 46.689 0 91.694 64.326 155.879 64.325 64.186 156.218 64.186 24.369 0 46.978-4.946 22.609-4.945 44.413-14.076 42.826-17.369 62.967 1.142 20.142 18.511 10.511 61.054Q807.174-280 712.63-198.206q-94.543 81.793-232.391 81.793Zm0-95q79.783 0 143.337-40.217 63.554-40.218 95.793-108.283-15.608 4.044-31.097 5.326-15.49 1.283-31.859.805-123.706-4.066-210.777-90.539-87.071-86.473-91.614-212.092-.24-16.369.923-31.978 1.164-15.609 5.446-30.978-67.826 32.478-108.282 96.152Q211.652-559.543 211.652-480q0 111.929 78.329 190.258 78.329 78.329 190.258 78.329ZM466.13-465.891Z"/></svg></span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M198-120q-25.846 0-44.23-18.384-18.384-18.385-18.384-44.23 0-25.846 18.384-44.23 18.384-18.385 44.23-18.385 25.846 0 44.23 18.385 18.384 18.384 18.384 44.23 0 25.845-18.384 44.23Q223.846-120 198-120Zm538.385 0q-18.846 0-32.923-13.769-14.076-13.769-15.922-33.23-8.692-100.616-51.077-188.654-42.385-88.039-109.885-155.539-67.5-67.501-155.539-109.885Q283-663.462 182.385-672.154q-19.461-1.846-33.23-16.23-13.769-14.385-13.769-33.846t14.076-32.922q14.077-13.461 32.923-12.23 120.076 8.692 226.038 58.768 105.961 50.077 185.73 129.846 79.769 79.769 129.846 185.731 50.077 105.961 58.769 226.038 1.231 18.846-12.538 32.922Q756.461-120 736.385-120Zm-252 0q-18.231 0-32.423-13.461t-18.653-33.538Q418.155-264.23 348.886-333.5q-69.27-69.27-166.501-84.423-20.077-4.462-33.538-18.961-13.461-14.5-13.461-33.346 0-19.076 13.884-33.23 13.884-14.153 33.115-10.922 136.769 15.384 234.384 112.999 97.615 97.615 112.999 234.384 3.231 19.23-10.538 33.115Q505.461-120 484.385-120Z"/></svg>
+      </a>
+    
+    <div id="nav-menu-btn" class="nav-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M177.37-252.282q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Zm0-186.218q-17.453 0-29.477-11.963-12.024-11.964-12.024-29.326 0-17.363 12.024-29.537T177.37-521.5h605.26q17.453 0 29.477 11.963 12.024 11.964 12.024 29.326 0 17.363-12.024 29.537T782.63-438.5H177.37Zm0-186.217q-17.453 0-29.477-11.964-12.024-11.963-12.024-29.326t12.024-29.537q12.024-12.174 29.477-12.174h605.26q17.453 0 29.477 11.964 12.024 11.963 12.024 29.326t-12.024 29.537q-12.024 12.174-29.477 12.174H177.37Z"/></svg>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      
+        <image src=/images/me.jpg></image>
+      
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Hailin Zheng </div>
+      <div class="dot"></div>
+      <div class="subtitle">Stay content and upward, gentle and firm. </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://twitter.com/fishcanf1y" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://space.bilibili.com/3537118364175129?spm_id_from=333.1007.0.0" title="Bilibili"><i class="fa-brands fa-bilibili"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+
+
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Categories</h3>
+      <div class="category-box">
+            <a class="category-link" href="/categories/Coding/">
+                Coding
+                <div class="category-count">5</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Pwn/">
+                Pwn
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Crypto/">
+                Crypto
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E5%BA%95%E5%B1%82/">
+                底层
+                <div class="category-count">1</div>
+            </a>
+        
+            <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">
+                算法
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/CTF/">
+                CTF
+                <div class="category-count">7</div>
+            </a>
+        
+            <a class="category-link" href="/categories/AI/">
+                AI
+                <div class="category-count">3</div>
+            </a>
+        
+            <a class="category-link" href="/categories/Web%E5%AE%89%E5%85%A8/">
+                Web安全
+                <div class="category-count">4</div>
+            </a>
+        </div>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="widget-tag-list" itemprop="keywords"><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Attention/" rel="tag">Attention</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Coding/" rel="tag">Coding</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Crypto/" rel="tag">Crypto</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Deep-Learning/" rel="tag">Deep Learning</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Pwn/" rel="tag">Pwn</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web/" rel="tag">Web</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/Web%E5%AE%89%E5%85%A8/" rel="tag">Web安全</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/asm/" rel="tag">asm</a></li><li class="widget-tag-list-item"><a class="widget-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+       
+
+
+<article id="post-Many-Time-Pad-Attack" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+    
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="main-title-bar">
+  <div class="main-title-dot"></div>
+  
+    
+      <h1 class="p-name article-title" itemprop="headline name">
+        Many Time Pad Attack
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <div class="meta-info">
+  <time class="dt-published" datetime="2025-06-22T03:37:00.000Z" itemprop="datePublished">2025-06-22</time>
+</div>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+  <a class="meta-cate-link" href="/categories/Crypto/">Crypto</a>
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            5.3k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Crypto/" rel="tag">Crypto</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <h2 id="一些基础知识"><a href="#一些基础知识" class="headerlink" title="一些基础知识"></a>一些基础知识</h2><p><strong>符号：</strong></p>
+<p>⊕ 代表异或</p>
+<p>C1 代表密文</p>
+<p>M1 代表明文</p>
+<p><strong>性质：</strong></p>
+<ol>
+<li>交换律</li>
+<li>结合律 (a ⊕ b ) ⊕ c &#x3D; a⊕ ( b ⊕ c)</li>
+<li>任何数x x ⊕ x &#x3D; 0 x ⊕ 0 &#x3D; X</li>
+<li>自反性 x ⊕ b ⊕ b &#x3D; x ⊕ 0 &#x3D; x</li>
+</ol>
+<h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>Many-Time-Pad (多时间垫) 攻击是一种针对多次使用相同密钥的流密码（如一次性密码本，One-Time Pad）的密码分析技术。其核心原理是利用密钥重用导致的明文信息泄露，通过数学和统计方法恢复部分或全部明文。以下是其核心原理和步骤：</p>
+<p><strong>1. 一次性密码本（OTP）的安全前提</strong><br>OTP的安全性是建立在：</p>
+<ul>
+<li>密钥完全随机且仅使用一次。</li>
+<li>密钥长度 ≥ 明文长度。</li>
+<li>若同一密钥被多次加密不同明文（即 C₁ &#x3D; P₁ ⊕ K, C₂ &#x3D; P₂ ⊕ K），则攻击者可通过密文的组合推断出明文信息。</li>
+</ul>
+<p><strong>2. 攻击原理：密钥重用的漏洞</strong><br>当同一密钥 K 加密多个明文时，密文之间的异或（⊕）等价于明文之间的异或：</p>
+<p>$C₁ ⊕ C₂ &#x3D; (P₁ ⊕ K) ⊕ (P₂ ⊕ K) &#x3D; P₁ ⊕ P₂$<br>形象一点可以表达成这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">密文 = 明文 ⊕ 密钥</span><br><span class="line">密文1 ⊕ 密文2 = 明文1 ⊕ 明文2 ⊕ 密钥1 ⊕ 密钥2</span><br></pre></td></tr></table></figure>
+<p>此时，攻击者获得了 P₁ ⊕ P₂（即明文的异或结果），而无需知道密钥 K。</p>
+<p><strong>3. 利用明文冗余恢复信息</strong><br>通过分析 P₁ ⊕ P₂，攻击者可以利用自然语言的统计特性（如字母频率、空格、常见词）逐步推测明文。例如：</p>
+<ul>
+<li><p>空格字符攻击：在ASCII编码中，空格（0x20）与字母异或的结果具有特定模式（如大写&#x2F;小写转换）。</p>
+</li>
+<li><p>词频分析：对 P₁ ⊕ P₂ 的局部进行猜测，若某段异或结果符合常见词的统计特征（如英文中的”the”、”and”），则可反推明文片段。</p>
+</li>
+</ul>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="BUUCTF-AFCTF2018"><a href="#BUUCTF-AFCTF2018" class="headerlink" title="BUUCTF: [AFCTF2018]"></a>BUUCTF: [AFCTF2018]</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">25030206463d3d393131555f7f1d061d4052111a19544e2e5d54</span><br><span class="line">0f020606150f203f307f5c0a7f24070747130e16545000035d54</span><br><span class="line">1203075429152a7020365c167f390f1013170b1006481e13144e</span><br><span class="line">0f4610170e1e2235787f7853372c0f065752111b15454e0e0901</span><br><span class="line">081543000e1e6f3f3a3348533a270d064a02111a1b5f4e0a1855</span><br><span class="line">0909075412132e247436425332281a1c561f04071d520f0b1158</span><br><span class="line">4116111b101e2170203011113a69001b47520601155205021901</span><br><span class="line">041006064612297020375453342c17545a01451811411a470e44</span><br><span class="line">021311114a5b0335207f7c167f22001b44520c15544801125d40</span><br><span class="line">06140611460c26243c7f5c167f3d015446010053005907145d44</span><br><span class="line">0f05110d160f263f3a7f4210372c03111313090415481d49530f</span><br></pre></td></tr></table></figure>
+<p>设每一个字符串（密文）为$C_i$,都是某个<code>key</code>异或上明文 $M_i$ 得到的.我们的目标是获取到这个key,已知明文是英文句子.</p>
+<p>$C_1 ⨁ C_2 &#x3D;(M_1 ⨁ key) ⨁ (M_2 ⨁ key) &#x3D; M_1 ⨁ M_2$</p>
+<p>因此两个密文异或得到两个明文</p>
+<p>我们使用$C_1$异或上其他的密文</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> binascii</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"></span><br><span class="line">loca = string.ascii_lowercase + string.ascii_uppercase</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hextostr</span>(<span class="params">hexstr</span>):</span><br><span class="line">    <span class="built_in">hex</span> = hexstr.encode(<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">    str_bin = binascii.unhexlify(<span class="built_in">hex</span>)</span><br><span class="line">    <span class="keyword">return</span> str_bin.decode(<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line"></span><br><span class="line">c1 = <span class="string">&quot;25030206463d3d393131555f7f1d061d4052111a19544e2e5d&quot;</span></span><br><span class="line">c2 = <span class="string">&#x27;0f020606150f203f307f5c0a7f24070747130e16545000035d&#x27;</span></span><br><span class="line">c3 = <span class="string">&#x27;1203075429152a7020365c167f390f1013170b1006481e1314&#x27;</span></span><br><span class="line">c4 = <span class="string">&#x27;0f4610170e1e2235787f7853372c0f065752111b15454e0e09&#x27;</span></span><br><span class="line">c5 = <span class="string">&#x27;081543000e1e6f3f3a3348533a270d064a02111a1b5f4e0a18&#x27;</span></span><br><span class="line">c6 = <span class="string">&#x27;0909075412132e247436425332281a1c561f04071d520f0b11&#x27;</span></span><br><span class="line">c7 = <span class="string">&#x27;4116111b101e2170203011113a69001b475206011552050219&#x27;</span></span><br><span class="line">c8 = <span class="string">&#x27;041006064612297020375453342c17545a01451811411a470e&#x27;</span></span><br><span class="line">c9 = <span class="string">&#x27;021311114a5b0335207f7c167f22001b44520c15544801125d&#x27;</span></span><br><span class="line">c10 = <span class="string">&#x27;06140611460c26243c7f5c167f3d015446010053005907145d&#x27;</span></span><br><span class="line">c11 = <span class="string">&#x27;0f05110d160f263f3a7f4210372c03111313090415481d49&#x27;</span></span><br><span class="line">chiphers =[c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11]</span><br><span class="line"></span><br><span class="line">s2 = hextostr(c2)</span><br><span class="line">sc1 = hextostr(c1)</span><br><span class="line"><span class="keyword">for</span> chipher <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(chiphers)):</span><br><span class="line">    <span class="keyword">if</span> chipher == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(sc1)):</span><br><span class="line">        asc =<span class="built_in">chr</span>(<span class="built_in">ord</span>(sc1[i]) ^ <span class="built_in">ord</span>(hextostr(chiphers[chipher])[i]))</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> asc:</span><br><span class="line">            <span class="keyword">if</span> i <span class="keyword">in</span> loca:</span><br><span class="line">                <span class="built_in">print</span>(i,end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;.&quot;</span>,end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>()</span><br></pre></td></tr></table></figure>
+
+<p>得到的内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">....S....N.U.....A..M.N..</span><br><span class="line">...Ro..I...I....SE....P.I</span><br><span class="line">.E..H...IN..H...........T</span><br><span class="line">..A.H.R.....E....P......E</span><br><span class="line">...RT...E...M....M....A.L</span><br><span class="line">d...V..I..DNEt........K.D</span><br><span class="line">.......I....K..I.ST...TiS</span><br><span class="line">.....f...N.I........M.O..</span><br><span class="line">.........N.I...I.S.I..I..</span><br><span class="line">....P....N.OH...SA....Sg..</span><br></pre></td></tr></table></figure>
+
+<p>可以观察到，有些列上有大量的英文字符，有些列一个英文字符都没有。这是偶然现象吗？</p>
+<h3 id="ascii表"><a href="#ascii表" class="headerlink" title="ascii表"></a>ascii表</h3><p>ascii 码表在 Linux 下可以通过 man ascii 指令查看。它的性质有：</p>
+<ul>
+<li>0x20 是空格。 低于 0x20 的，全部是起特殊用途的字符； 0x20~0x7E 的，是可打印字符。</li>
+<li>0x30~0x39 是数字 0,1,2…9。</li>
+<li>0x41<del>0x5A 是大写字母 A-Z； 0x61</del>0x7A 是小写字母 a-z.</li>
+</ul>
+<p>我们可以注意到一个至关重要的规律：小写字母 xor 空格，会得到对应的大写字母；大写字母 xor 空格，会得到小写字母！所以，如果 <code>x ⨁ y</code> 得到一个英文字母，那么x和y之中有一个很大概率可能是空格，那么来看 C1 ⊕ 其他密文也就是M1 ⊕ 其他明文的表，如果第<code>col</code>列存在大量英文字母,我们可以猜测 <code>M1[col]</code> 是一个空格 知道M1的col位是空格有什么用呢？别忘了异或运算下，<code>x</code>的逆元是其自身。所以</p>
+<p><strong>$M_i[col] &#x3D; M_1[col] ⨁ M_i[col] &#x3D; M_1[col] ⨁ M_i[col] ⨁ 0x20$</strong></p>
+<p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Crypto.Util.strxor <span class="keyword">as</span> xo</span><br><span class="line"><span class="keyword">import</span> libnum, codecs, numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">isChr</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>) &lt;= x <span class="keyword">and</span> x &lt;= <span class="built_in">ord</span>(<span class="string">&#x27;z&#x27;</span>): <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>) &lt;= x <span class="keyword">and</span> x &lt;= <span class="built_in">ord</span>(<span class="string">&#x27;Z&#x27;</span>): <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">infer</span>(<span class="params">index, pos</span>):</span><br><span class="line">    <span class="keyword">if</span> msg[index, pos] != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    msg[index, pos] = <span class="built_in">ord</span>(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(c)):</span><br><span class="line">        <span class="keyword">if</span> x != index:</span><br><span class="line">            msg[x][pos] = xo.strxor(c[x], c[index])[pos] ^ <span class="built_in">ord</span>(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">know</span>(<span class="params">index, pos, ch</span>):</span><br><span class="line">    msg[index, pos] = <span class="built_in">ord</span>(ch)</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(c)):</span><br><span class="line">        <span class="keyword">if</span> x != index:</span><br><span class="line">            msg[x][pos] = xo.strxor(c[x], c[index])[pos] ^ <span class="built_in">ord</span>(ch)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dat = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">getSpace</span>():</span><br><span class="line">    <span class="keyword">for</span> index, x <span class="keyword">in</span> <span class="built_in">enumerate</span>(c):</span><br><span class="line">        res = [xo.strxor(x, y) <span class="keyword">for</span> y <span class="keyword">in</span> c <span class="keyword">if</span> x!=y]</span><br><span class="line">        f = <span class="keyword">lambda</span> pos: <span class="built_in">len</span>(<span class="built_in">list</span>(<span class="built_in">filter</span>(isChr, [s[pos] <span class="keyword">for</span> s <span class="keyword">in</span> res])))</span><br><span class="line">        cnt = [f(pos) <span class="keyword">for</span> pos <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(x))]</span><br><span class="line">        <span class="keyword">for</span> pos <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(x)):</span><br><span class="line">            dat.append((f(pos), index, pos))</span><br><span class="line"></span><br><span class="line">c = [codecs.decode(x.strip().encode(), <span class="string">&#x27;hex&#x27;</span>) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">open</span>(<span class="string">&#x27;Problem.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>).readlines()]</span><br><span class="line"></span><br><span class="line">msg = np.zeros([<span class="built_in">len</span>(c), <span class="built_in">len</span>(c[<span class="number">0</span>])], dtype=<span class="built_in">int</span>)</span><br><span class="line"></span><br><span class="line">getSpace()</span><br><span class="line"></span><br><span class="line">dat = <span class="built_in">sorted</span>(dat)[::-<span class="number">1</span>]</span><br><span class="line"><span class="keyword">for</span> w, index, pos <span class="keyword">in</span> dat:</span><br><span class="line">    infer(index, pos)</span><br><span class="line"></span><br><span class="line">know(<span class="number">10</span>, <span class="number">21</span>, <span class="string">&#x27;y&#x27;</span>)</span><br><span class="line">know(<span class="number">8</span>, <span class="number">14</span>, <span class="string">&#x27;n&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>.join([<span class="string">&#x27;&#x27;</span>.join([<span class="built_in">chr</span>(c) <span class="keyword">for</span> c <span class="keyword">in</span> x]) <span class="keyword">for</span> x <span class="keyword">in</span> msg]))</span><br><span class="line"></span><br><span class="line">key = xo.strxor(c[<span class="number">0</span>], <span class="string">&#x27;&#x27;</span>.join([<span class="built_in">chr</span>(c) <span class="keyword">for</span> c <span class="keyword">in</span> msg[<span class="number">0</span>]]).encode())</span><br><span class="line"><span class="built_in">print</span>(key)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Dear Friend, This time I u</span><br><span class="line">nderstood my mistake and u</span><br><span class="line">sed One time pad encryptio</span><br><span class="line">n scheme, I heard that it </span><br><span class="line">is the only encryption met</span><br><span class="line">hod that is mathematically</span><br><span class="line"> proven to be not cracked </span><br><span class="line">ever if the key is kept se</span><br><span class="line">cure, Let Me know if you a</span><br><span class="line">gree with me to use this e</span><br><span class="line">ncryption scheme always...</span><br><span class="line">b&#x27;afctf&#123;OPT_1s_Int3rest1ng&#125;!&#x27;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Many-Time-Pad攻击利用了密钥重用导致明文信息线性泄漏的特性，结合自然语言的冗余性，通过统计分析恢复明文。这再次验证了OTP的核心安全准则：密钥绝对不可重用。<br>Many-Time-Pad 是不安全的。我们这一次的攻击，条件稍微有点苛刻：明文必须是英文句子、截获到的密文必须足够多。但是只要攻击者有足够的耐心进行词频分析、监听大量密文，还是能够发起极具威胁性的攻击。如果铁了心要用直接xor来加密信息，应当采用一次一密(One-Time-Pad)</p>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.ruanx.net/many-time-pad/">Pion1eer - Many-Time-Pad 攻击</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_63303407/article/details/127193042">异或 MTP 攻击 - CSDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/26576521">多次使用“一次性密钥”(one-time pad)为什么不安全？- 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://secinject.wordpress.com/2015/08/12/many-time-pad-attack/">SecInject - Many time pad attack</a></li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.5555/829513.830504">ACM Digital Library</a></li>
+</ol>
+
+        
+      </div>
+
+       
+        <footer class="article-footer">
+           
+        </footer>
+         
+    </div>
+    
+     
+  </div>
+  
+    
+<nav id="article-nav">
+  <a class="article-nav-btn left "
+    
+      href="/2025/07/10/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CCrypto-%E4%BA%86%E4%B8%8D%E8%B5%B7%E7%9A%84%E7%9B%96%E8%8C%A8%E6%AF%94/"
+      title="攻防世界Crypto-了不起的盖茨比"
+     >
+    <i class="fa-solid fa-angle-left"></i>
+    <p class="title-text">
+      
+        攻防世界Crypto-了不起的盖茨比
+        
+    </p>
+  </a>
+  <a class="article-nav-btn right "
+    
+      href="/2025/06/22/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CCrypto-cat's%20gift/"
+      title="攻防世界Crypto-cat's gift"
+     >
+
+    <p class="title-text">
+      
+        攻防世界Crypto-cat&#39;s gift
+        
+    </p>
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</nav>
+
+
+  
+</article>
+
+
+  
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <div id="comment-card" class="comment-card">
+    <div class="main-title-bar">
+      <div class="main-title-dot"></div>
+      <div class="main-title">Comments </div>
+    </div>
+    <div id="vcomments"></div>
+  </div>
+  <script>
+      new Valine({"enable":true,"appId":null,"appKey":null,"placeholder":"Just go go","pageSize":10,"highlight":true,"serverURLs":null,"el":"#vcomments"});
+  </script>
+
+
+
+
+
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2025 Hailin Zheng<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vivia">Vivia</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn hide" onclick="topFunction()">
+        <i class="fa-solid fa-angle-up"></i>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.classList.remove('hide')
+        } else {
+            btn.classList.add('hide')
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>
